@@ -128,8 +128,8 @@ function installviapip() {
 #
 [ $EUID -eq 0 ] && sudo="" || sudo="sudo"
 #change this to branch name where we want to pull files from
-branch="main"
-srcurl="https://raw.githubusercontent.com/nksan/Rpi-SetWiFi-viaBluetooth/$branch"
+branch="development"
+srcurl="https://raw.githubusercontent.com/eatabit/Rpi-SetWiFi-viaBluetooth/$branch"
 echo $"
 > Install btwifiset: Configure WiFi via Bluetooth
 "
