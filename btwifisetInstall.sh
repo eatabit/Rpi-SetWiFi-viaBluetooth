@@ -11,7 +11,7 @@ function errexit() {
 function askyn() {
     # Prompt in $1
     local ans
-    echo -n "$1" '[y/N]? ' ; read ans < /dev/tty
+    echo -n "$1" '[y/N]? ' ; read ans
     case "$ans" in
         y*|Y*) return 0 ;;
         *) return 1 ;;
@@ -22,7 +22,7 @@ function askdefault () {
     # $1=prompt, $2=return variable $3=default-for-prompt-plus-default
     # Defines the variable named in $2 with the user's response as its value
     local pmpt=$1 dfl="$3" tmp=""
-    echo -n "$pmpt [Default: $dfl]: " ; read tmp < /dev/tty
+    echo -n "$pmpt [Default: $dfl]: " ; read tmp
     [ "$tmp" == "" ] && tmp="$dfl"
     eval "${2}=\"${tmp}\""     # Defines a variable with the return value
 }
