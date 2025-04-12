@@ -32,7 +32,7 @@ function getcountrycode() {
     #
     # $1: Default country
     #
-    local ctry=""
+    local ctry="US"
     if [ -f $wpa ]
     then
 	if $sudo grep -q "country=" $wpa >/dev/null 2>&1
@@ -136,7 +136,7 @@ echo $"
 btwifidir="/usr/local/btwifiset"
 
 echo "> Specify btwifiset service install location"
-askdefault "btwifiset install directory" btwifidir "$btwifidir"
+# askdefault "btwifiset install directory" btwifidir "$btwifidir"
 $sudo mkdir -p $btwifidir
 
 # Set btwifiset comms password if not set (file doesn't exist or is 0-length)
@@ -144,7 +144,7 @@ btpwd=$(hostname)
 if [[ ! -f $btwifidir/crypto ]] || [[ ! -s $btwifidir/crypto ]]
 then
     $sudo rm -f $btwifidir/crypto
-    askdefault "Bluetooth password (encryption key)" btpwd "$btpwd"
+    # askdefault "Bluetooth password (encryption key)" btpwd "$btpwd"
 	(cat <<EOF
 $btpwd
 EOF
@@ -153,8 +153,8 @@ EOF
 fi
 
 wpa="/etc/wpa_supplicant/wpa_supplicant.conf"
-country=""
-getcountrycode
+country="US"
+# getcountrycode
 
 echo "> Download btwifiset to $btwifidir"
 for f in btwifiset.py btpassword.py passwordREADME.txt
