@@ -70,12 +70,15 @@ class ConfigData:
         ConfigData.START = time.monotonic()
 
     @staticmethod
+    # def check_timeout():
+    #     '''retunrs True if timeout has elapsed'''
+    #     if time.monotonic() - ConfigData.START > ConfigData.TIMEOUT:
+    #         return True
+    #     else:
+    #         return False
     def check_timeout():
-        '''retunrs True if timeout has elapsed'''
-        if time.monotonic() - ConfigData.START > ConfigData.TIMEOUT:
-            return True
-        else:
-            return False
+        '''returns False to never time out'''
+        return False
 
 # *************************************************************************   
 
