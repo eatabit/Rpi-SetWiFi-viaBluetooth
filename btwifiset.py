@@ -76,11 +76,10 @@ class mLOG:
             pass
 
 
-
-#not used anymore: FILEDIR = f"{pathlib.Path(__file__).parent.resolve()}/"
+# not used anymore: FILEDIR = f"{pathlib.Path(__file__).parent.resolve()}/"
 PYTHONEXEC = f"{sys.executable}"
 NETWORK_MANAGER_CONNECTION_TIMEOUT = 25 # used with Network Manager implementations:  connection timeout in seconds ()
-#connection timeout:  time in seconds where nmcli will wait for a connection before aborting (typically password is wrong)
+# connection timeout:  time in seconds where nmcli will wait for a connection before aborting (typically password is wrong)
 
 """
 note to self:
@@ -295,7 +294,6 @@ class WifiUtil:
         """
         
         return info
-    
 
 
 class Wpa_Network:
@@ -1224,7 +1222,7 @@ class WpaSupplicant:
         out= subprocess.run(command_str, 
                                 shell=True,capture_output=True,encoding='utf-8',text=True).stdout
         mLOG.log(f'disconnect" {out}')
-        
+
 
 class WifiManager:
     '''
@@ -1623,7 +1621,7 @@ class RPiId:
                 return mac[0]
         
         return None
-    
+
 class AndroidAES:
     @staticmethod
     def encrypt(plaintext, key,nonce_counter):
@@ -1816,7 +1814,7 @@ class RequestCounter:
         self.kind = "normal"
         self.val = 0
 
-    
+
 class BTCryptoManager:
     """
     meant to be a singleton instantiated when code starts
@@ -2028,7 +2026,7 @@ class BTCryptoManager:
                 this class variable self.unknown_response as a notification back to the iphone app.
                 """
                 return b'\x1e'+"unknown".encode()  
-        
+
 # if __name__ == "__main__":
 #     bt = BTCryptoManager()
 #     if bt.crypto is not None:
@@ -2036,8 +2034,6 @@ class BTCryptoManager:
 #     x = bt.encrypt("CheckIn")
 #     print(''.join(f'{b:02x}' for b in x))
 #     print([b for b in x])
-    
-
 
 
 SEPARATOR_HEX = b'\x1e'
@@ -2061,7 +2057,7 @@ class BTDbusSender(dbus.service.Object):
     def send_signal(self,msg):
         self.send_signal_on_dbus(msg)
 
-# *************************************************************************   
+# *************************************************************************
 
 class ConfigData:
     '''
@@ -2107,7 +2103,7 @@ class ConfigData:
     #     else:
     #         return False
 
-# *************************************************************************   
+# *************************************************************************
 
 class Notifications:
     """
@@ -2328,7 +2324,7 @@ class Blue:
                 Blue.user_requested_endSession = False
         except:
             pass
-        
+
 
 class Advertise(dbus.service.Object):
 
@@ -2397,7 +2393,6 @@ class Advertise(dbus.service.Object):
             dbus.service.Object.remove_from_connection(self)
         except Exception as ex:
             mLOG.log(ex)
-    
 
 
 class Application(dbus.service.Object):
@@ -2465,7 +2460,7 @@ class Application(dbus.service.Object):
         except Exception as exrc:
             mLOG.log(f"dbus exception trying to remove object from connection")
             mLOG.log(exrc)
-        
+
 
 class Service(dbus.service.Object):
     #PATH_BASE = "/org/bluez/example/service"
@@ -2634,13 +2629,12 @@ class Descriptor(dbus.service.Object):
     def WriteValue(self, value, options):
         mLOG.log('Default WriteValue called, returning error')
 
-#***********Define Services and Characteristics below **************************************************
-#*******************************************************************************************************
+# ***********Define Services and Characteristics below **************************************************
+# *******************************************************************************************************
 """here are uuid to use:"""
 UUID_WIFISET = 'fda661b6-4ad0-4d5d-b82d-13ac464300ce'  # service WifiSet
 UUID_WIFIDATA = 'e622b297-6bfe-4f35-938e-39abfb697ac3' # characteristic WifiData: may be encrypted - used for all wifi data and commands
 UUID_INFO = '62d77092-41bb-49a7-8e8f-dc254767e3bf'    # characteristic InfoWifi: pass instructions - in clear
-
 
 
 class WifiSetService(Service):
@@ -2662,12 +2656,10 @@ class WifiSetService(Service):
         self.cryptomgr.setPhoneQuittingMessage(self.phone_quitting_message["ssid"]+SEPARATOR+self.phone_quitting_message["pw"])
         # self.startSendingButtons()
         # self.startListeningToUserApp()
-        
-        
 
     def getLockInfo(self):
-        #returns either MACid or LOCKNonceMACId
-        #Nonce must be exactly 12 bytes
+        # returns either MACid or LOCKNonceMACId
+        # Nonce must be exactly 12 bytes
         self.cryptomgr.piInfo()
 
     def appMsgHandler(self,msg):
@@ -2687,7 +2679,6 @@ class WifiSetService(Service):
         dbus.SessionBus().add_signal_receiver(self.appMsgHandler,
                         bus_name='com.normfrenette.apptobt',
                         path ='/com/normfrenette/apptobt' )
-
 
     def testDbusAppUser(self):
         self.startSendingButtons()
@@ -2743,21 +2734,21 @@ class WifiSetService(Service):
                           the connected AP info is sent back - it is up to ios to recognized that the requested connection has failed
                           and RPi is still connected to the previous AP.'''
         mLOG.log(f'received from iphone: registering SSID {val}')
-        #string sent must be SSID=xxxPW=yyy where xxx is the SSID and yyy is password
-        #PW+ maybe omited
+        # string sent must be SSID=xxxPW=yyy where xxx is the SSID and yyy is password
+        # PW+ maybe omited
         if val[0] == '':  #this means we received a request/command from ios (started with SEP)
-            #********** WIFI management:
+            # ********** WIFI management:
             if val[1] == 'OFF':
-                #call wifiwpa method to disconnect from current ssid
+                # call wifiwpa method to disconnect from current ssid
                 self.mgr.wifi_connect(False)
             elif val[1] == 'ON':
                 self.mgr.wifi_connect(True)
             elif val[1] == 'DISCONN':
                 self.mgr.disconnect()
             elif val[1] == 'AP2s':
-                #version2 sends AP2s and gets a json object back:
-                #note: since version never reads APs one by one, self.AP_list is always empty
-                #sets the wifi prefix for notification using version 2
+                # version2 sends AP2s and gets a json object back:
+                # note: since version never reads APs one by one, self.AP_list is always empty
+                # sets the wifi prefix for notification using version 2
                 self.notifications.setappVersionWifiPrefix(2)
                 returned_list = self.mgr.get_list() #go get the list
                 temp_AP_list = []
@@ -2768,9 +2759,9 @@ class WifiSetService(Service):
                 self.all_APs_dict = {"allAps":temp_AP_list}
                 self.notifications.setJsonNotification(self.all_APs_dict,"wifi")
             elif val[1] == 'APs':
-                #version 1 of the phone app sends this code: APs
-                #after receiving notification READY - it reads the list one by one - with chracteristic read.
-                #sets the wifi prefix for notification using version 1
+                # version 1 of the phone app sends this code: APs
+                # after receiving notification READY - it reads the list one by one - with chracteristic read.
+                # sets the wifi prefix for notification using version 1
                 self.notifications.setappVersionWifiPrefix(1)
                 returned_list = self.mgr.get_list() #go get the list
                 self.AP_list = []
@@ -2778,7 +2769,7 @@ class WifiSetService(Service):
                     self.AP_list.append(ap.msg())
                 self.notifications.setNotification('READY',"wifi")
                 mLOG.log(f'READY: AP List for ios: {self.AP_list}')
-                #this is needed for compatibility with verison 1 of the iphone app
+                # this is needed for compatibility with verison 1 of the iphone app
                 # ap_connected = self.mgr.wpa.connected_AP
                 # if ap_connected != "0000":
                 #     self.notifications.setNotification(ap_connected)
@@ -2787,20 +2778,26 @@ class WifiSetService(Service):
                 ssid_to_delete = val[1][4:]
                 self.mgr.request_deletion(ssid_to_delete)
                 self.notifications.setNotification('DELETED',"wifi")
-                
-            
-            #*********** LOCK Management:
+            elif val[1] == "PRINT_TEST":
+                # Print a test page to the thermal printer
+                success = self.print_test_page()
+                if success:
+                    self.notifications.setNotification("PRINT_OK", "wifi")
+                else:
+                    self.notifications.setNotification("PRINT_FAIL", "wifi")
+
+            # *********** LOCK Management:
             elif val[1] == "unknown":
                 # this handles the LOCK request which will have been sent encrypted while pi is unlocked
                 if self.cryptomgr.crypto:
                     mLOG.log(f"rpi is locked - sending encrypted: {self.cryptomgr.unknown_response}")
                 else:
                     mLOG.log(f"RPi is unlocked - sending in clear: {self.cryptomgr.unknown_response}")
-                #simulate response did not get there:
+                # simulate response did not get there:
                 # return
                 self.notifications.setNotification(self.cryptomgr.unknown_response,"crypto")
             elif val[1] == "UnlockRequest":
-                #notification: - must send response encrypted and then afterwards disable crypto
+                # notification: - must send response encrypted and then afterwards disable crypto
                 self.notifications.setNotification('Unlocking',"crypto")
             elif val[1] == "CheckIn":
                 self.notifications.setNotification('CheckedIn',"crypto")
@@ -2818,7 +2815,7 @@ class WifiSetService(Service):
                 othDict = WifiUtil.get_other_info()
                 if othDict is not None:
                     try:
-                        #set never_encrypt so it is sent in clear text regardless of crypto status
+                        # set never_encrypt so it is sent in clear text regardless of crypto status
                         self.notifications.setJsonNotification(othDict,"wifi",True)
                     except:
                         pass
@@ -2847,7 +2844,7 @@ class WifiSetService(Service):
             # any other "command"  is assumed to be a button click or similar - to send to user app via dbus
             # validate it here first before sending
             elif val[1] == "":
-                #blank message would normally be a stale nonce when pi is locked or failed to decrypt
+                # blank message would normally be a stale nonce when pi is locked or failed to decrypt
                 mLOG.log("received message is blank - ignoring it")
 
             else:
@@ -2860,26 +2857,26 @@ class WifiSetService(Service):
                 except: #this catch error on decoding json
                     mLOG.log(f'Invalid SSID string {val}')
                 return
-            
-        #************ SSID connection management
-       
+
+        # ************ SSID connection management
+
         else:
             try:
                 mLOG.log(f'received requested SSID for connection: {val}')
                 self.current_requested_ssid = val[0]
                 self.current_requested_pw = val[1]
                 network_num = -1
-                #if user is connecting to an existing network - only the SSID is passed (no password) 
+                # if user is connecting to an existing network - only the SSID is passed (no password)
                 #   so network number is unknown (-1)
                 if self.current_requested_ssid: 
-                    #Add Specific Codes and corresponding calls here.
+                    # Add Specific Codes and corresponding calls here.
                     if self.current_requested_ssid == self.phone_quitting_message["ssid"] and self.current_requested_pw == self.phone_quitting_message["pw"]:
-                        #user is ending BT session -  set up ending flag and wait for disconnection
+                        # user is ending BT session -  set up ending flag and wait for disconnection
                         Blue.user_requested_endSession = True
-                        #return correct notification to signify to phone app to start disconnect process:
+                        # return correct notification to signify to phone app to start disconnect process:
                         self.notifications.setNotification(f'3111{self.phone_quitting_message["ssid"]}',"wifi")
                         return
-                    #normal code to connect to a ssid
+                    # normal code to connect to a ssid
                     mLOG.log(f'about to connect to ssid:{self.current_requested_ssid}, with password:{self.current_requested_pw}')
                     connected_ssid = self.mgr.request_connection(self.current_requested_ssid,self.current_requested_pw)
                     if len(connected_ssid)>0:
@@ -2890,7 +2887,6 @@ class WifiSetService(Service):
                         self.notifications.setNotification('FAIL',"wifi")
             except Exception as ex:
                 mLOG.log("EERROR - ",ex)
-                
 
 
 class InfoCharacteristic(Characteristic):
@@ -3182,7 +3178,6 @@ def btRestart():
         mLOG.log("checking bluetooth")
         s = subprocess.run(cmd, shell=True, capture_output=True,encoding='utf-8',text=True, timeout=10)
         mLOG.log(s)
-
 
 
 if __name__ == "__main__":
