@@ -2704,6 +2704,27 @@ class WifiSetService(Service):
             self.sender.send_signal(json_str)
             time.sleep(.7)
 
+    def print_test_page(self):
+        """
+        Prints a test page to the thermal printer at /dev/usb/lp0.
+        """
+        test_text = (
+            "==== TEST PAGE ====\n"
+            "Bluetooth WiFi Setup\n"
+            "Date: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n"
+            "-------------------\n"
+            "If you see this, the printer is working!\n"
+            "===================\n\n"
+        )
+        try:
+            with open("/dev/usb/lp0", "w") as printer:
+                printer.write(test_text)
+            mLOG.log("Test page sent to thermal printer.")
+            return True
+        except Exception as ex:
+            mLOG.log(f"Failed to print test page: {ex}")
+            return False
+
     def register_SSID(self,val):
         ''' action taken when ios app writes to WifiData characteristic
         val is in the form [first_string,second_string, code] - see description in characteristic Write method
