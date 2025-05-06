@@ -808,6 +808,25 @@ class NetworkManager:
 
             #set the connected network to this ssid -> also sets the connected_AP and gets the signal strength:        
             self.mgr.wpa.connected_network = use_network # make it the connected network
+
+            # --------- REMOVE ALL OTHER NETWORKMANAGER CONNECTIONS -----------
+            try:
+                # Get all wifi connections except the one just connected
+                out = subprocess.run(
+                    ["nmcli", "-t", "-f", "NAME,TYPE", "connection", "show"],
+                    capture_output=True, encoding='utf-8', text=True
+                ).stdout
+                for line in out.strip().split('\n'):
+                    if not line:
+                        continue
+                    name, typ = line.split(':', 1)
+                    if typ == "wifi" and name != use_network.network_name:
+                        mLOG.log(f"Deleting old NetworkManager connection: {name}")
+                        subprocess.run(["nmcli", "connection", "delete", name], capture_output=True)
+            except Exception as ex:
+                mLOG.log(f"Error removing old NetworkManager connections: {ex}")
+            # ---------------------------------------------------------------
+
         return connection_attempt
 
     def create_network(self,ssid,pw,hidden = False):
