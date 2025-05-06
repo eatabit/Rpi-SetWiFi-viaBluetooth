@@ -793,8 +793,19 @@ class NetworkManager:
                     # the connected network is now  known network - move it there and update its status in list of APs
                     self.mgr.wpa.wpa_supplicant_ssids[use_network.network_name] = use_network #add new network to wpa list
                     mLOG.log(f'added {network.ssid} to wpa list')
-                     # Note it is not necessary to modiy the in_supplicant and connected property of the AP since it will be regenerated
+                        # Note it is not necessary to modify the in_supplicant and connected property of the AP since it will be regenerated
                     #       when ios calls for the list again.  If it is hidden, it will be scanned because the hidden "word" was set on the network.
+
+                    # Ensure autoconnect is enabled for the new connection
+                    try:
+                        subprocess.run(
+                            ["nmcli", "connection", "modify", f"{use_network.network_name}", "connection.autoconnect", "yes"],
+                            capture_output=True, encoding='utf-8'
+                        )
+                        mLOG.log(f"Set connection.autoconnect=yes for {use_network.network_name}")
+                    except Exception as ex:
+                        mLOG.log(f"Failed to set autoconnect: {ex}")
+
             #set the connected network to this ssid -> also sets the connected_AP and gets the signal strength:        
             self.mgr.wpa.connected_network = use_network # make it the connected network
         return connection_attempt
